@@ -1,0 +1,22 @@
+name: vllm
+
+services:
+
+  Qwen3-4B-unsloth-bnb-4bit:
+    container_name: Qwen3-4B-unsloth-bnb-4bit
+    image: vllm/vllm-openai:v0.8.5.post1
+    command: >
+      --model /models/Qwen3-4B-unsloth-bnb-4bit --dtype bfloat16 --load_format bitsandbytes --max-model-len 32768 --gpu-memory-utilization 0.45 --enable-auto-tool-choice --tool-call-parser hermes --chat-template /chat_templates/qwen3_nonthinking.jinja
+    ports:
+      - "8020:8000"
+    volumes:
+      - ./models:/models
+      - ./chat_templates:/chat_templates
+    restart: unless-stopped
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ gpu ]
